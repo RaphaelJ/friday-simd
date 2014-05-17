@@ -11,11 +11,23 @@ stability:              Experimental
 build-type:             Simple
 cabal-version:          >= 1.10
 
-Flag sse41
-    Description:        Enable SSE 4.1 optimisations.
-    Default:            False
+Flag avx2
+    Description:        Enable AVX 2 optimisations. This flag requires the 'avx'
+                        and 'sse41' flags to be enabled.
+    Default:            True
 
-library
+Flag avx
+    Description:        Enable AVX optimisations. This flag requires the 'sse41'
+                        flag to be enabled. Disabling this flag will disable the
+                        'avx2' flag.
+    Default:            True
+
+Flag sse41
+    Description:        Enable SSE 4.1 optimisations. Disabling this flag will
+                        disable the 'avx' and 'avx2' flags.
+    Default:            True
+
+Library
     exposed-modules:    Vision.Histogram.Simd
 
     ghc-options:        -Wall -O2
@@ -23,9 +35,16 @@ library
     default-language:   Haskell2010
 
     c-sources:          src/Vision/Histogram/Simd.c
+    include-dirs:       src/include
 
     if flag(sse41)
-        cc-options:     -Wall -O3 -msse4.1 -DSSE41
+        if flag(avx)
+            if flag(avx2)
+                cc-options: -Wall -O3 -mavx2 -DAVX2 -mavx -DAVX -msse4.1 -DSSE41
+            else
+                cc-options: -Wall -O3 -mavx -DAVX -msse4.1 -DSSE41
+        else
+            cc-options: -Wall -O3 -msse4.1 -DSSE41
     else
         cc-options:     -Wall -O3
 
