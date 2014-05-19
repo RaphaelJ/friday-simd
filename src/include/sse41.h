@@ -6,6 +6,13 @@
 // Number of 32 bits integers in the 128 bits SSE register.
 const int N_INT_128 = sizeof (__m128i) / sizeof (int);
 
+// Returns the sum of double precision numbers in the register.
+inline int sum_m128d(__m128d vec)
+{
+    return _mm_cvtsd_f64(vec)                        //   vec[0]
+         + _mm_cvtsd_f64(_mm_unpackhi_pd(vec, vec)); // + vec[1]
+}
+
 // Returns the sum of 32 bits integers in the register.
 inline int sum_m128i_int(__m128i vec)
 {

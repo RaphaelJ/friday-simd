@@ -21,7 +21,11 @@ main = do
     defaultMain [
           bgroup "histograms" [
               bgroup "Int32 hitograms" [
-                  bench "intersection comparison" $
+                  bench "chi-square comparison" $
+                    whnf (HS.compareChiInt32 hist) hist
+                , bench "chi-square comparison" $
+                    whnf (H.compareChi hist :: Histogram DIM1 Int32 -> Double) hist
+                , bench "intersection comparison" $
                     whnf (HS.compareIntersectInt32 hist) hist
                 ]
             ]
